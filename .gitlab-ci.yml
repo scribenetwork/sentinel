@@ -1,0 +1,22 @@
+image: schnouki/pyinstaller-windows-ci:python2
+
+stages:
+  - build
+
+build-development:
+  stage: build
+  tags:
+    - runner-ccex-01
+  only:
+    - dev
+  script:
+    - pip install -r requirements.txt
+    - pyinstaller --runtime-tmpdir ./tmp/ --onefile --paths=lib/ ./main.py
+    - mv dist/main.exe dist/scribe-sentinel-win32.exe
+    - echo "scribe-sentinel-win32.exe --config=your_path_to_conf_file" > dist/run_sentinel.bat
+  artifacts:
+    paths:
+    - dist/scribe-sentinel-win32.exe
+    - dist/run_sentinel.bat
+    expire_in: 1 week
+

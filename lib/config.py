@@ -1,6 +1,7 @@
 """
     Set up defaults and read sentinel.conf
 """
+import argparse
 import sys
 import os
 from dash_config import DashConfig
@@ -14,17 +15,48 @@ sentinel_version = "1.1.0"
 min_dashd_proto_version_with_sentinel_ping = 70207
 
 
+def get_argarse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, required=False)
+    parser.add_argument('--rpc-port', type=int, required=False)
+    parser.add_argument('--repair', action='store_true', default=False, required=False)
+    parser.add_argument('--sentinel', action='store_true', default=False, required=False)
+    return parser
+
+def get_args():
+    parser = get_argarse()
+
+    try:
+        args = parser.parse_args()
+    except:
+        # We are inside tests
+        parser.add_argument('folder')
+        args = parser.parse_args()
+
+    return args
+
 def get_dash_conf():
-    home = os.environ.get('HOME')
+    args = get_args()
 
-    dash_conf = os.path.join(home, ".scribecore/scribe.conf")
-    if sys.platform == 'darwin':
-        dash_conf = os.path.join(home, "Library/Application Support/ScribeCore/scribe.conf")
-
-    dash_conf = sentinel_cfg.get('scribe_conf', dash_conf)
+    if args.config:
+        dash_conf = args.config
+    else:
+        home = os.environ.get('HOME')
+        if home is not None:
+            if sys.platform == 'darwin':
+                dash_conf = os.path.join(home, "Library/Application Support/ScribeCore/scribe.conf")
+            else:
+                dash_conf = os.path.join(home, ".scribecore/scribe.conf")
+        else:
+            home = os.getenv('APPDATA')
+            if home is not None:
+                dash_conf = os.path.join(home, "scribecore\\scribe.conf")
+            else:
+                dash_conf = 'scribe.conf'
+        
+        dash_conf = sentinel_cfg.get('scribe_conf', dash_conf)
 
     return dash_conf
-
 
 def get_network():
     return sentinel_cfg.get('network', 'mainnet')

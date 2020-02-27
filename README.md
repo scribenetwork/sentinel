@@ -74,6 +74,23 @@ To view debug output, set the `SENTINEL_DEBUG` environment variable to anything 
 
     $ SENTINEL_DEBUG=1 ./venv/bin/python bin/sentinel.py
 
+## Windows
+
+Download Windows version at [Releases](https://github.com/scribenetwork/sentinel/releases) page.
+
+Build Windows version:
+```
+git clone https://github.com/scribenetwork/sentinel
+cd sentinel
+docker run -v "$(pwd):/src/" cdrx/pyinstaller-windows:python2 "pyinstaller --runtime-tmpdir ./tmp/ --onefile --paths=lib/ ./main.py"
+```
+
+Check build:
+```
+ls -la dist/
+docker run -it -v "$(pwd):/src/" schnouki/pyinstaller-windows-ci:python2 wine dist/main.exe --config="sentinel.conf"
+```
+
 ### License
 
 Released under the MIT license, under the same terms as Scribe itself. See [LICENSE](LICENSE) for more info.
