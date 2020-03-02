@@ -9,6 +9,11 @@ from dash_config import DashConfig
 default_sentinel_config = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '../sentinel.conf')
 )
+
+if not os.path.isfile(default_sentinel_config):
+    base = os.path.abspath(os.path.dirname(sys.argv[0]))
+    default_sentinel_config = os.path.join(base, 'sentinel.conf')
+
 sentinel_config_file = os.environ.get('SENTINEL_CONFIG', default_sentinel_config)
 sentinel_cfg = DashConfig.tokenize(sentinel_config_file)
 sentinel_version = "1.1.0"
